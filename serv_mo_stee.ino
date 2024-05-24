@@ -190,20 +190,16 @@ const char index_html[] PROGMEM = R"rawliteral(
     };
     // Stepper motor control
     var stepperSlider = document.getElementById("stepperSlider");
-    var stepperSpeed = document.getElementById("stepperSpeed");
     stepperSlider.oninput = function () {
       var value = this.value;
-      stepperSpeed.textContent = value;
       $.get("/stepper?value=" + value);
     };
     stepperSlider.onmouseup = function () {
       this.value = 0;
-      stepperSpeed.textContent = 0;
       $.get("/stepper?value=0");
     };
     stepperSlider.ontouchend = function () {
       this.value = 0;
-      stepperSpeed.textContent = 0;
       $.get("/stepper?value=0");
     };
   </script>
@@ -269,8 +265,18 @@ void setup() {
     if (request->hasParam("value")) {
       stepperValueString = request->getParam("value")->value();
       int value = stepperValueString.toInt();
-      myStepper.setSpeed(value);
-      myStepper.runSpeed();
+      if (value == 0) {
+        myStepper.stop(); // Stop stepper motor if value is 0
+      } else {
+        // Set stepper speed and direction based on the value
+        int speed = abs(value); // Speed is always positive
+        if (value > 0) {
+          myStepper.setSpeed(speed);
+        } else {
+          myStepper.setSpeed(-speed);
+        }
+        myStepper.runSpeed();
+      }
       Serial.println("Stepper Speed: " + stepperValueString);
     }
     request->send(200, "text/plain", "OK");
@@ -281,5 +287,6 @@ void setup() {
 }
 
 void loop() {
-  // No need to handle clients manually as AsyncWebServer handles this
+  // Run the stepper motor
+  myStepper.runSpeed();
 }
