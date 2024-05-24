@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <style>
+    body {
+      text-align: left;
+      font-family: "Trebuchet MS", Arial;
+      margin-left: 20px; /* Padding to position content towards the left */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 100vh;
+    }
+    .slider {
+      width: 300px; /* Decreased width */
+      height: 20px; /* Decreased height */
+      -webkit-appearance: none;
+      appearance: none;
+      background: #ddd;
+      outline: none;
+      opacity: 0.7;
+      transition: opacity .2s;
+    }
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 30px; /* Joystick-like thumb */
+      height: 30px;
+      background: #4CAF50;
+      cursor: pointer;
+    }
+    .slider::-moz-range-thumb {
+      width: 30px; /* Joystick-like thumb */
+      height: 30px;
+      background: #4CAF50;
+      cursor: pointer;
+    }
+    .slider-container {
+      margin-top: 10px;
+    }
+    .degree-display {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+  </style>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+<body>
+  <div class="degree-display" id="degreeDisplay">Rotation: 0°</div>
+  <div class="slider-container">
+    <input type="range" min="0" max="180" class="slider" id="servoSlider" value="90"/>
+  </div>
+
+  <script>
+    var slider = document.getElementById("servoSlider");
+    var degreeDisplay = document.getElementById("degreeDisplay");
+    
+    slider.oninput = function() {
+      var value = this.value;
+      var rotation = value - 90;
+      degreeDisplay.textContent = "Rotation: " + rotation + "°";
+      $.get("/?value=" + value);
+    };
+    
+    slider.onmouseup = function() {
+      this.value = 90;
+      degreeDisplay.textContent = "Rotation: 0°";
+      $.get("/?value=90");
+    };
+    
+    slider.ontouchend = function() {
+      this.value = 90;
+      degreeDisplay.textContent = "Rotation: 0°";
+      $.get("/?value=90");
+    };
+  </script>
+</body>
+</html>
